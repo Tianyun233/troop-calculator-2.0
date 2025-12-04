@@ -120,19 +120,58 @@
         .feedback-area { margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #eee; }
         .feedback-area h3 { color: #2c3e50; margin-bottom: 15px; text-align: center; }
         .like-section { text-align: center; margin-bottom: 20px; }
-        .like-section button { padding: 10px 20px; font-size: 1.1em; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
+        
+        /* 修改点赞按钮样式 */
+        .like-section button { 
+            padding: 10px 20px; 
+            font-size: 1.1em; 
+            background-color: #e74c3c; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+            min-width: 100px; /* 保证按钮宽度 */
+        }
         .like-section button:hover { background-color: #c0392b; }
         .like-section span { font-size: 1.2em; font-weight: bold; margin-left: 10px; color: #e74c3c; }
+        
         .comment-input-group { display: flex; margin-bottom: 15px; }
         .comment-input-group textarea { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; min-height: 60px; }
         .comment-input-group button { margin-left: 10px; padding: 10px 15px; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
         .comment-input-group button:hover { background-color: #27ae60; }
         .comments-list { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 5px; background-color: #fff; }
-        .comment-item { border-bottom: 1px dashed #eee; padding: 10px 0; }
+        
+        /* 评论项容器 */
+        .comment-item { 
+            border-bottom: 1px dashed #eee; 
+            padding: 10px 0; 
+            position: relative; /* 用于定位操作按钮 */
+        }
         .comment-item:last-child { border-bottom: none; }
         .comment-author { font-weight: bold; color: #3498db; }
         .comment-text { margin-top: 5px; line-height: 1.5; }
-        .comment-time { font-size: 0.8em; color: #999; margin-top: 5px; }
+        
+        /* 评论操作按钮容器 */
+        .comment-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .comment-time { font-size: 0.8em; color: #999; }
+        .comment-actions button {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+            padding: 0;
+            display: none; /* 默认隐藏，只对自己的评论显示 */
+        }
+        .comment-actions button:hover { text-decoration: underline; }
+
         
         @media (max-width: 600px) {
             .input-group { gap: 10px; }
@@ -256,7 +295,7 @@
         <h3 data-i18n="feedback_title">🎉 喜欢这个计算器吗？点赞或评论吧！</h3>
         
         <div class="like-section">
-            <button id="likeButton" data-i18n="like_button">👍 点赞计算器</button>
+            <button id="likeButton" data-i18n="like_button">👍 点赞</button>
             <span id="likeCount">0</span>
         </div>
 
@@ -276,17 +315,26 @@
             <h3 data-i18n="modal_title">登录或注册</h3>
             <input type="email" id="authEmail" placeholder="邮箱">
             <input type="password" id="authPassword" placeholder="密码">
-            <button id="confirmAuthButton" data-i18n="btn_confirm_login">确认登录</button>
+            <button id="confirmAuthButton" data-i18n="btn_confirm_login">确认</button>
             <p id="toggleAuthMode" data-i18n="switch_to_register">没有账号？点击注册</p>
         </div>
     </div>
+
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="modal-content">
+            <h3>修改评论</h3>
+            <textarea id="editCommentTextarea" style="width: calc(100% - 20px); min-height: 100px; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            <button id="saveEditButton" style="background-color: #f39c12;">保存修改</button>
+        </div>
+    </div>
+
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script> 
 
     <script>
-        // --- 1. 多语言词典 (新增认证相关文本) ---
+        // --- 1. 多语言词典 (修改点赞文本，新增编辑文本) ---
         const translations = {
             "zh-CN": {
                 title: "🐻 打熊配兵比例计算器",
@@ -320,7 +368,7 @@
                 comment_placeholder_attr: "输入您的评论...",
                 comment_submit: "提交评论",
                 feedback_title: "🎉 喜欢这个计算器吗？点赞或评论吧！",
-                like_button: "👍 点赞计算器",
+                like_button: "👍 点赞", // <--- 修正点赞按钮文本
                 latest_comments: "最新评论：",
                 no_comments: "暂无评论",
                 anonymous_user: "匿名用户",
@@ -329,8 +377,6 @@
                 like_error: "点赞失败：",
                 comment_success: "评论已成功提交。",
                 comment_error: "提交评论失败：",
-
-                // 新增认证相关文本
                 btn_login: "登录/注册",
                 btn_logout: "登出",
                 modal_title: "登录或注册",
@@ -340,7 +386,15 @@
                 login_success: "登录成功！",
                 register_success: "注册成功！已自动登录。",
                 logout_success: "已安全登出。",
-                auth_error_prefix: "认证失败："
+                auth_error_prefix: "认证失败：",
+
+                // 新增编辑/删除文本
+                btn_edit: "修改",
+                btn_delete: "删除",
+                confirm_delete: "确定要删除这条评论吗？",
+                edit_success: "评论修改成功！",
+                delete_success: "评论已删除。",
+                no_permission: "您只能修改或删除您自己的评论。",
             },
             "zh-TW": {
                 title: "🐻 打熊配兵比例計算器",
@@ -374,7 +428,7 @@
                 comment_placeholder_attr: "輸入您的評論...",
                 comment_submit: "提交評論",
                 feedback_title: "🎉 喜歡這個計算器嗎？點贊或評論吧！",
-                like_button: "👍 點贊計算器",
+                like_button: "👍 點贊", // <--- 修正点赞按钮文本
                 latest_comments: "最新評論：",
                 no_comments: "暫無評論",
                 anonymous_user: "匿名用戶",
@@ -383,8 +437,6 @@
                 like_error: "點贊失敗：",
                 comment_success: "評論已成功提交。",
                 comment_error: "提交評論失敗：",
-
-                // 新增認證相關文本
                 btn_login: "登錄/註冊",
                 btn_logout: "登出",
                 modal_title: "登錄或註冊",
@@ -394,8 +446,17 @@
                 login_success: "登錄成功！",
                 register_success: "註冊成功！已自動登錄。",
                 logout_success: "已安全登出。",
-                auth_error_prefix: "認證失敗："
+                auth_error_prefix: "認證失敗：",
+
+                // 新增編輯/刪除文本
+                btn_edit: "修改",
+                btn_delete: "刪除",
+                confirm_delete: "確定要刪除這條評論嗎？",
+                edit_success: "評論修改成功！",
+                delete_success: "評論已刪除。",
+                no_permission: "您只能修改或刪除您自己的評論。",
             },
+            // ... (其他语言的翻译需要对应添加)
             "en": {
                 title: "🐻 Bear Trap Calculator",
                 author_label: "Author",
@@ -428,7 +489,7 @@
                 comment_placeholder_attr: "Enter your comment...",
                 comment_submit: "Submit Comment",
                 feedback_title: "🎉 Like this calculator? Like or comment!",
-                like_button: "👍 Like Calculator",
+                like_button: "👍 Like", // <--- 修正点赞按钮文本
                 latest_comments: "Latest Comments:",
                 no_comments: "No comments yet",
                 anonymous_user: "Anonymous User",
@@ -437,8 +498,6 @@
                 like_error: "Failed to like:",
                 comment_success: "Comment submitted successfully.",
                 comment_error: "Failed to submit comment:",
-
-                // New Auth Text
                 btn_login: "Login/Sign Up",
                 btn_logout: "Logout",
                 modal_title: "Login or Sign Up",
@@ -448,9 +507,16 @@
                 login_success: "Login successful!",
                 register_success: "Registration successful! Logged in automatically.",
                 logout_success: "Logged out successfully.",
-                auth_error_prefix: "Authentication failed:"
-            },
-            // ... (其他语言的翻译需要对应添加新的认证文本)
+                auth_error_prefix: "Authentication failed:",
+                
+                // New Edit/Delete Text
+                btn_edit: "Edit",
+                btn_delete: "Delete",
+                confirm_delete: "Are you sure you want to delete this comment?",
+                edit_success: "Comment updated successfully!",
+                delete_success: "Comment deleted.",
+                no_permission: "You can only edit or delete your own comments.",
+            }
         };
 
         let currentLang = "zh-CN"; 
@@ -503,7 +569,7 @@
         let currentUserId = null;
         let currentUserName = translations["zh-CN"].anonymous_user; // 初始默认为中文匿名
 
-        // --- 用户状态管理核心函数 ---
+        // --- 用户状态管理核心函数 (保持不变) ---
         function updateUIForUser(user) {
             const t = translations[currentLang];
             const displayUserName = document.getElementById('displayUserName');
@@ -536,6 +602,8 @@
                 authButton.style.display = 'block';
                 logoutButton.style.display = 'none';
             }
+            // 重新加载评论以更新操作按钮状态
+            loadComments(); 
         }
 
 
@@ -575,6 +643,7 @@
             // 初始化点赞和评论功能
             initFeedbackFeatures();
             setupAuthModalListeners();
+            setupEditModalListeners(); // 新增：设置编辑模态框监听器
         });
 
 
@@ -611,7 +680,7 @@
                 return;
             }
 
-            // --- 计算单兵有效强度 S ---
+            // --- 计算单兵有效强度 S (此处沿用您的兵种公式)---
             function calculateEffectiveStrength(stats, type, rosaActive) {
                 // 1. 基础 K 值
                 let attackMultiplier = 1 + (stats.buffAtk / 100);
@@ -729,15 +798,139 @@
                 ${correctionMsg}
             `;
         }
+        
+        // --- 评论管理函数 ---
+        let currentEditCommentId = null; // 用于存储当前正在编辑的评论ID
 
-        // --- Firebase Realtime Database 交互逻辑 (保持不变) ---
+        function deleteComment(commentId, authorId) {
+            const t = translations[currentLang];
+            if (currentUserId !== authorId || auth.currentUser.isAnonymous) {
+                alert(t.no_permission);
+                return;
+            }
+            if (confirm(t.confirm_delete)) {
+                database.ref(`calculator_data/comments/${commentId}`).remove()
+                    .then(() => {
+                        alert(t.delete_success);
+                        // loadComments() 会自动更新列表
+                    })
+                    .catch(error => {
+                        alert("删除失败：" + error.message);
+                    });
+            }
+        }
+
+        function openEditModal(commentId, authorId, currentText) {
+            const t = translations[currentLang];
+            if (currentUserId !== authorId || auth.currentUser.isAnonymous) {
+                alert(t.no_permission);
+                return;
+            }
+            currentEditCommentId = commentId;
+            document.getElementById('editCommentTextarea').value = currentText;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function setupEditModalListeners() {
+            const t = translations[currentLang];
+            const editModal = document.getElementById('editModal');
+            const saveEditButton = document.getElementById('saveEditButton');
+            const editCommentTextarea = document.getElementById('editCommentTextarea');
+
+            saveEditButton.addEventListener('click', () => {
+                const newText = editCommentTextarea.value.trim();
+                if (!newText) {
+                    alert(t.comment_empty_alert);
+                    return;
+                }
+
+                if (currentEditCommentId) {
+                    database.ref(`calculator_data/comments/${currentEditCommentId}`).update({
+                        text: newText,
+                        edited_at: firebase.database.ServerValue.TIMESTAMP 
+                    })
+                    .then(() => {
+                        alert(t.edit_success);
+                        editModal.style.display = 'none';
+                        currentEditCommentId = null;
+                        // loadComments() 会自动更新列表
+                    })
+                    .catch(error => {
+                        alert("保存修改失败：" + error.message);
+                    });
+                }
+            });
+
+            // 点击背景关闭模态框
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    editModal.style.display = 'none';
+                    currentEditCommentId = null;
+                }
+            });
+        }
+        
+        // --- 评论加载逻辑 (更新以包含操作按钮) ---
+        function loadComments() {
+            const t = translations[currentLang];
+            const commentsList = document.getElementById('commentsList');
+            const commentsRef = database.ref('calculator_data/comments').orderByChild('timestamp').limitToLast(10); 
+
+            commentsRef.on('value', (snapshot) => {
+                const comments = [];
+                snapshot.forEach((childSnapshot) => {
+                    comments.push({
+                        ...childSnapshot.val(),
+                        id: childSnapshot.key
+                    });
+                });
+                
+                comments.reverse();
+
+                let html = '';
+                if (comments.length === 0) {
+                    html = `<p style="text-align: center; color: #999;" data-i18n="no_comments">${t.no_comments}</p>`;
+                } else {
+                    comments.forEach(comment => {
+                        const date = new Date(comment.timestamp);
+                        const isUserComment = currentUserId === comment.user_id && !auth.currentUser.isAnonymous;
+                        
+                        // 动态生成操作按钮
+                        const actionButtons = `
+                            <div class="comment-actions">
+                                <button onclick="openEditModal('${comment.id}', '${comment.user_id}', \`${comment.text.replace(/`/g, '\\`')}\`)" 
+                                    style="${isUserComment ? 'display: inline;' : 'display: none;'}"
+                                    data-i18n="btn_edit">${t.btn_edit}</button>
+                                <button onclick="deleteComment('${comment.id}', '${comment.user_id}')"
+                                    style="${isUserComment ? 'display: inline;' : 'display: none;'}"
+                                    data-i18n="btn_delete">${t.btn_delete}</button>
+                            </div>
+                        `;
+
+                        html += `
+                            <div class="comment-item">
+                                <div class="comment-author">${comment.username}</div>
+                                <div class="comment-text">${comment.text}</div>
+                                <div class="comment-footer">
+                                    <div class="comment-time">${date.toLocaleString(currentLang)} ${comment.edited_at ? '(已修改)' : ''}</div>
+                                    ${actionButtons}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                commentsList.innerHTML = html;
+            });
+        }
+
+
+        // --- Firebase Realtime Database 交互逻辑 (修改点赞逻辑) ---
         function initFeedbackFeatures() {
             const t = translations[currentLang];
             const likeButton = document.getElementById('likeButton');
             const likeCountSpan = document.getElementById('likeCount');
             const commentInput = document.getElementById('commentInput');
             const submitCommentButton = document.getElementById('submitCommentButton');
-            const commentsList = document.getElementById('commentsList');
 
             // 1. 实时更新点赞总数
             const calculatorLikesCountRef = database.ref('calculator_data/likes_count');
@@ -746,7 +939,7 @@
                 likeCountSpan.textContent = currentLikes;
             });
 
-            // 2. 处理点赞按钮点击
+            // 2. 处理点赞按钮点击 (修复失败问题)
             likeButton.addEventListener('click', () => {
                 if (!currentUserId || auth.currentUser.isAnonymous) {
                     alert("请先登录或注册您的账号，以便保存您的点赞记录！");
@@ -754,19 +947,28 @@
                 }
 
                 const userLikedRef = database.ref(`calculator_data/users_who_liked/${currentUserId}`);
-                userLikedRef.transaction((currentValue) => {
-                    if (currentValue === null) { 
-                        calculatorLikesCountRef.transaction((count) => (count || 0) + 1); 
-                        alert(t.like_success);
-                        return true; 
-                    } else { 
-                        calculatorLikesCountRef.transaction((count) => (count > 0 ? count - 1 : 0)); 
-                        alert("已取消点赞"); 
-                        return null; 
-                    }
-                }).catch((error) => {
-                    console.error(t.like_error, error);
-                    alert(t.like_error + error.message);
+                userLikedRef.once('value').then(snapshot => {
+                    const isLiked = snapshot.val();
+                    
+                    userLikedRef.set(isLiked ? null : true) // 切换点赞状态
+                        .then(() => {
+                            // 只有在成功切换数据库状态后，才更新计数
+                            calculatorLikesCountRef.transaction((count) => {
+                                if (isLiked) {
+                                    // 原本已点赞，现在取消
+                                    alert("已取消点赞"); 
+                                    return (count || 0) - 1; 
+                                } else {
+                                    // 原本未点赞，现在点赞
+                                    alert(t.like_success);
+                                    return (count || 0) + 1;
+                                }
+                            });
+                        })
+                        .catch((error) => {
+                            console.error(t.like_error, error);
+                            alert(t.like_error + error.message);
+                        });
                 });
             });
 
@@ -800,39 +1002,11 @@
             });
 
             // 4. 实时加载评论
-            const commentsRef = database.ref('calculator_data/comments').orderByChild('timestamp').limitToLast(10); // 只加载最新的10条
-            commentsRef.on('value', (snapshot) => {
-                const comments = [];
-                snapshot.forEach((childSnapshot) => {
-                    comments.push({
-                        ...childSnapshot.val(),
-                        id: childSnapshot.key
-                    });
-                });
-                
-                // 反转数组，让最新评论在顶部
-                comments.reverse();
-
-                let html = '';
-                if (comments.length === 0) {
-                    html = `<p style="text-align: center; color: #999;" data-i18n="no_comments">${t.no_comments}</p>`;
-                } else {
-                    comments.forEach(comment => {
-                        const date = new Date(comment.timestamp);
-                        html += `
-                            <div class="comment-item">
-                                <div class="comment-author">${comment.username}</div>
-                                <div class="comment-text">${comment.text}</div>
-                                <div class="comment-time">${date.toLocaleString(currentLang)}</div>
-                            </div>
-                        `;
-                    });
-                }
-                commentsList.innerHTML = html;
-            });
+            loadComments(); // 初始加载，后续在 updateUIForUser 中调用以刷新按钮状态
         }
 
-        // --- 登录/注册模态框逻辑 ---
+
+        // --- 登录/注册模态框逻辑 (保持不变) ---
         function setupAuthModalListeners() {
             const t = translations[currentLang];
             const authButton = document.getElementById('authButton');
