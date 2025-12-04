@@ -392,6 +392,11 @@
                 input_username: "昵称 (必填)",
                 alert_username_empty: "注册时昵称不能为空！",
                 default_username: "用户" // 匿名用户昵称的基础
+                auth_error_prefix: "认证失败：",
+                input_username: "昵称 (必填)",
+                alert_username_empty: "注册时昵称不能为空！",
+                default_username: "用户",
+                alert_password_strength: "密码必须至少包含6位，并且至少包含一个数字和一个小写字母。", // ⭐️ 新增文本 ⭐️
             },
             "zh-TW": {
                 // ... (其他翻译需要同步更新)
@@ -407,6 +412,10 @@
                 input_username: "暱稱 (必填)",
                 alert_username_empty: "註冊時暱稱不能為空！",
                 default_username: "用戶"
+                input_username: "暱稱 (必填)",
+                alert_username_empty: "註冊時暱稱不能為空！",
+                default_username: "用戶",
+                alert_password_strength: "密碼必須至少包含6位，並且至少包含一個數字和一個小寫字母。", // ⭐️ 新增文本 ⭐️
             },
             "en": {
                 // ... (其他翻译需要同步更新)
@@ -422,10 +431,101 @@
                 input_username: "Nickname (Required)",
                 alert_username_empty: "Nickname cannot be empty during registration!",
                 default_username: "User"
+                input_username: "Nickname (Required)",
+                alert_username_empty: "Nickname cannot be empty during registration!",
+                default_username: "User",
+                alert_password_strength: "Password must be at least 6 characters long and include at least one number and one lowercase letter.", // ⭐️ 新增文本 ⭐️
             },
             // ... (其他语言)
         };
 
+        let currentLang = "zh-CN"; 
+    
+    // ... (changeLanguage, firebaseConfig, firebase.initializeApp, updateUIForUser, onAuthStateChanged 保持不变) ...
+
+    // --- 核心：新增密码强度验证函数 ---
+    function validatePassword(password) {
+        // 至少包含一个数字 (0-9)
+        const hasNumber = /\d/.test(password);
+        // 至少包含一个小写字母 (a-z)
+        const hasLower = /[a-z]/.test(password);
+        
+        return hasNumber && hasLower;
+    }
+
+    // ... (calculateOptimalRatio, editComment, deleteComment, initFeedbackFeatures 保持不变) ...
+
+    // --- 登录/注册模态框逻辑 (修改：处理昵称输入和密码强度) ---
+    function setupAuthModalListeners() {
+        const t = translations[currentLang];
+        const authButton = document.getElementById('authButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const authModal = document.getElementById('authModal');
+        const confirmAuthButton = document.getElementById('confirmAuthButton');
+        const toggleAuthMode = document.getElementById('toggleAuthMode');
+        
+        const authUsername = document.getElementById('authUsername'); // 昵称
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        
+        let isRegisterMode = false;
+
+        // ... (显示模态框、登出逻辑、切换模式逻辑 保持不变) ...
+
+        // 确认登录/注册
+        confirmAuthButton.addEventListener('click', () => {
+            const email = authEmail.value;
+            const password = authPassword.value;
+            const username = authUsername.value.trim();
+
+            if (!email || password.length < 6) {
+                // 默认的长度检查仍然保留
+                alert("请输入有效的邮箱和至少6位密码。");
+                return;
+            }
+            
+            if (isRegisterMode) {
+                // 1. 检查昵称
+                if (!username) {
+                    alert(t.alert_username_empty);
+                    return;
+                }
+
+                // 2. ⭐️ 检查密码强度 ⭐️
+                if (!validatePassword(password)) {
+                    alert(t.alert_password_strength);
+                    return;
+                }
+
+                // 注册
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // 注册成功后，保存用户自定义昵称
+                        return database.ref(`users/${userCredential.user.uid}/username`).set(username)
+                            .then(() => userCredential); 
+                    })
+                    .then(() => {
+                        alert(t.register_success);
+                        authModal.style.display = 'none';
+                    })
+                    .catch((error) => {
+                        alert(t.auth_error_prefix + error.message);
+                    });
+            } else {
+                // 登录 (登录无需额外的密码强度检查)
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        alert(t.login_success);
+                        authModal.style.display = 'none';
+                    })
+                    .catch((error) => {
+                        alert(t.auth_error_prefix + error.message);
+                    });
+            }
+        });
+
+        // ... (点击背景关闭模态框 保持不变) ...
+    }
         let currentLang = "zh-CN"; 
         
         function changeLanguage(lang) {
