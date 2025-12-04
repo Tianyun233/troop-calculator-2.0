@@ -5,189 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bear Trap Calculator</title>
     <style>
-        /* CSS 样式部分 (未改动) */
+        /* CSS 样式部分 */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; padding: 20px; max-width: 800px; margin: 0 auto; }
         
-        /* 顶部布局容器 */
-        .top-bar-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        /* 语言选择器 (左上角) */
-        .lang-container { 
-            text-align: left; 
-        }
+        .lang-container { text-align: right; margin-bottom: 10px; }
         .lang-container label { font-weight: bold; margin-right: 5px; color: #555; }
         select#langSelector { padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
 
-        /* 用户认证区域 (右上角) */
-        #user-auth-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95em;
-            color: #555;
-            background: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        #authButton, #logoutButton {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: bold;
-        }
-        #authButton { background-color: #3498db; color: white; }
-        #authButton:hover { background-color: #2980b9; }
-        #logoutButton { background-color: #e74c3c; color: white; display: none; }
-        #logoutButton:hover { background-color: #c0392b; }
-
         h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
-        .author-credit { text-align: center; color: #7f8c8d; margin-bottom: 20px; font-size: 1.1em; }
+        .author-credit { text-align: center; color: #7f8c8d; margin-bottom: 20px; font-size: 1.1em; } 
         
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .section-title { font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: #555; }
         
-        /* 登录/注册模态框样式 */
-        #authModal {
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.7); 
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center;
-        }
-        .modal-content {
-            background: white; 
-            padding: 30px; 
-            border-radius: 8px; 
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .modal-content input[type="email"], .modal-content input[type="password"], .modal-content input[type="text"] {
-            width: calc(100% - 20px); 
-            padding: 10px; 
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .modal-content button {
-            padding: 10px; 
-            width: 100%; 
-            background-color: #2ecc71; 
-            color: white; 
-            border: none; 
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .modal-content button:hover { background-color: #27ae60; }
-        #toggleAuthMode { 
-            text-align: center; 
-            margin-top: 15px; 
-            cursor: pointer; 
-            color: #3498db; 
-            font-size: 0.9em;
-        }
-        
-        /* 其他样式保持不变 */
+        /* 改进的输入布局 */
         .input-group { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
         .input-group label { font-weight: bold; min-width: 130px; }
         input[type="number"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100px; }
         input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; }
+        
+        /* 下拉菜单样式 */
         select.tier-select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; background-color: #fff; min-width: 150px; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; font-size: 0.95em; }
         th { background-color: #f8f9fa; color: #444; }
         input.table-input { width: 80%; padding: 5px; text-align: center; }
+
         .btn-calc { width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 18px; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
         .btn-calc:hover { background-color: #2980b9; }
+
         #result-area { display: none; background-color: #e8f6f3; border: 1px solid #a3e4d7; }
         .result-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1em; }
         .result-highlight { font-weight: bold; color: #d35400; }
         .notice { font-size: 0.9em; color: #7f8c8d; margin-top: 10px; font-style: italic; }
-        .feedback-area { margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #eee; }
-        .feedback-area h3 { color: #2c3e50; margin-bottom: 15px; text-align: center; }
-        .like-section { text-align: center; margin-bottom: 20px; }
-        .like-section button { padding: 10px 20px; font-size: 1.1em; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
-        .like-section button:hover { background-color: #c0392b; }
-        .like-section span { font-size: 1.2em; font-weight: bold; margin-left: 10px; color: #e74c3c; }
-        .comment-input-group { display: flex; margin-bottom: 15px; }
-        .comment-input-group textarea { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; min-height: 60px; }
-        .comment-input-group button { margin-left: 10px; padding: 10px 15px; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
-        .comment-input-group button:hover { background-color: #27ae60; }
-        .comments-list { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 5px; background-color: #fff; }
-        
-        /* 评论项目样式 */
-        .comment-item { 
-            border-bottom: 1px dashed #eee; 
-            padding: 10px 0; 
-            position: relative; /* 用于定位操作按钮 */
-        }
-        .comment-item:last-child { border-bottom: none; }
-        .comment-author { font-weight: bold; color: #3498db; }
-        .comment-text { margin-top: 5px; line-height: 1.5; }
-        .comment-time { font-size: 0.8em; color: #999; margin-top: 5px; }
-
-        /* 评论操作按钮容器 */
-        .comment-actions {
-            position: absolute;
-            bottom: 10px; /* 移到右下角 */
-            right: 0;
-            display: flex;
-            gap: 10px;
-        }
-        .comment-actions button {
-            background: none;
-            border: none;
-            color: #7f8c8d;
-            cursor: pointer;
-            font-size: 0.8em;
-            padding: 0;
-        }
-        .comment-actions button:hover {
-            color: #e74c3c;
-        }
         
         @media (max-width: 600px) {
             .input-group { gap: 10px; }
             .input-group label { min-width: 100px; }
             th, td { padding: 5px; font-size: 0.85em; }
-            .comment-input-group { flex-direction: column; }
-            .comment-input-group button { margin-left: 0; margin-top: 10px; width: 100%; }
         }
     </style>
 </head>
 <body>
-    
-    <div class="top-bar-container">
-        <div class="lang-container">
-            <label for="langSelector">Language:</label>
-            <select id="langSelector" onchange="changeLanguage(this.value)">
-                <option value="zh-CN">简体中文</option>
-                <option value="zh-TW">繁體中文</option>
-                <option value="en">English</option>
-                <option value="ja">日本語</option>
-                <option value="ko">한국어</option>
-            </select>
-        </div>
 
-        <div id="user-auth-status">
-            <span id="displayUserName" data-i18n="anonymous_user">匿名用户</span>
-            <button id="authButton" data-i18n="btn_login">登录/注册</button>
-            <button id="logoutButton" data-i18n="btn_logout" style="display: none;">登出</button>
-        </div>
+    <div class="lang-container">
+        <label for="langSelector">Language:</label>
+        <select id="langSelector" onchange="changeLanguage(this.value)">
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+        </select>
     </div>
 
     <h1 data-i18n="title">🐻 打熊配兵比例计算器</h1>
@@ -278,52 +148,8 @@
         <div id="result-content"></div>
     </div>
 
-    <div class="card feedback-area">
-        <h3 data-i18n="feedback_title">🎉 喜欢这个计算器吗？点赞或评论吧！</h3>
-        
-        <div class="like-section">
-            <button id="likeButton" data-i18n="like_button">👍 点赞</button>
-            <span id="likeCount">0</span>
-        </div>
-
-        <div class="comment-input-group">
-            <textarea id="commentInput" data-i18n="comment_placeholder_attr" placeholder="输入您的评论..."></textarea>
-            <button id="submitCommentButton" data-i18n="comment_submit">提交评论</button>
-        </div>
-
-        <h4 data-i18n="latest_comments">最新评论：</h4>
-        <div id="commentsList" class="comments-list">
-            <p style="text-align: center; color: #999;" data-i18n="no_comments">暂无评论</p>
-        </div>
-    </div>
-    
-    <div id="authModal">
-        <div class="modal-content">
-            <h3 data-i18n="modal_title">登录或注册</h3>
-            
-            <input type="text" id="authUsername" placeholder="昵称 (仅注册时需要)" style="display: none;">
-            <input type="email" id="authEmail" placeholder="邮箱">
-            <input type="password" id="authPassword" placeholder="密码">
-            
-            <button id="confirmAuthButton" data-i18n="btn_confirm_login">确认</button>
-            <p id="toggleAuthMode" data-i18n="switch_to_register">没有账号？点击注册</p>
-        </div>
-    </div>
-
-    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1001; justify-content: center; align-items: center;">
-        <div class="modal-content">
-            <h3>修改您的评论</h3>
-            <textarea id="editCommentText" style="width: calc(100% - 20px); padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; min-height: 80px;"></textarea>
-            <button id="confirmEditButton" style="background-color: #3498db;">确认修改</button>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script> 
-
     <script>
-        // --- 1. 多语言词典 (新增昵称相关文本) ---
+        // --- 1. 多语言词典 (已更新提示语 msg_correction) ---
         const translations = {
             "zh-CN": {
                 title: "🐻 打熊配兵比例计算器",
@@ -335,10 +161,10 @@
                 label_cav_skill: "骑兵黄金技能：",
                 label_arc_skill: "弓兵黄金技能：",
                 opt_none: "无 / 低于黄金3",
-                opt_g3: "黄金 3 (10% 双倍)",
-                opt_g5: "黄金 5 (15% 双倍)",
-                opt_g3_arc: "黄金 3 (20% 增伤)",
-                opt_g5_arc: "黄金 5 (30% 增伤)",
+                opt_g3: "黄金 3 (10% 概率双倍)",
+                opt_g5: "黄金 5 (15% 概率双倍)",
+                opt_g3_arc: "黄金 3 (20% 概率增伤)",
+                opt_g5_arc: "黄金 5 (30% 概率增伤)",
                 stats_title: "兵种面板数据",
                 th_troop: "兵种",
                 th_base_atk: "初始攻",
@@ -353,181 +179,132 @@
                 label_total: "总计兵力：",
                 msg_correction: "⚠️ 注意：原始计算盾兵不足 5000，已自动补齐，并按最优权重重新分配骑兵与弓兵。",
                 alert_capacity: "请输入有效的出征容量！",
-                alert_stats: "请输入有效的面板数值！",
-                comment_placeholder_attr: "输入您的评论...",
-                comment_submit: "提交评论",
-                feedback_title: "🎉 喜欢这个计算器吗？点赞或评论吧！",
-                like_button: "👍 点赞", 
-                latest_comments: "最新评论：",
-                no_comments: "暂无评论",
-                anonymous_user: "匿名用户",
-                comment_empty_alert: "评论内容不能为空！",
-                like_success: "点赞成功！",
-                like_error: "点赞失败：",
-                comment_success: "评论已成功提交。",
-                comment_error: "提交评论失败：",
-                
-                // 评论操作新增
-                edit_button: "修改",
-                delete_button: "删除",
-                confirm_delete: "确定要删除这条评论吗？",
-                delete_success: "评论已删除。",
-                delete_error: "删除失败：",
-                edit_success: "评论修改成功。",
-                edit_error: "评论修改失败：",
-                not_logged_in_like: "请先登录您的账号，以便保存您的点赞记录！", 
-
-                // 认证相关文本
-                btn_login: "登录/注册",
-                btn_logout: "登出",
-                modal_title: "登录或注册",
-                btn_confirm_login: "确认",
-                switch_to_register: "没有账号？点击注册",
-                switch_to_login: "已有账号？点击登录",
-                login_success: "登录成功！",
-                register_success: "注册成功！已自动登录。",
-                logout_success: "已安全登出。",
-                auth_error_prefix: "认证失败：",
-                // 新增昵称相关
-                input_username: "昵称 (必填)",
-                alert_username_empty: "注册时昵称不能为空！",
-                default_username: "用户" // 匿名用户昵称的基础
-                auth_error_prefix: "认证失败：",
-                input_username: "昵称 (必填)",
-                alert_username_empty: "注册时昵称不能为空！",
-                default_username: "用户",
-                alert_password_strength: "密码必须至少包含6位，并且至少包含一个数字和一个小写字母。", // ⭐️ 新增文本 ⭐️
+                alert_stats: "请输入有效的面板数值！"
             },
             "zh-TW": {
-                // ... (其他翻译需要同步更新)
-                like_button: "👍 點贊", 
-                edit_button: "修改",
-                delete_button: "刪除",
-                confirm_delete: "確定要刪除這條評論嗎？",
-                delete_success: "評論已刪除。",
-                delete_error: "刪除失敗：",
-                edit_success: "評論修改成功。",
-                edit_error: "評論修改失敗：",
-                not_logged_in_like: "請先登入您的帳號，以便儲存您的點贊記錄！",
-                input_username: "暱稱 (必填)",
-                alert_username_empty: "註冊時暱稱不能為空！",
-                default_username: "用戶"
-                input_username: "暱稱 (必填)",
-                alert_username_empty: "註冊時暱稱不能為空！",
-                default_username: "用戶",
-                alert_password_strength: "密碼必須至少包含6位，並且至少包含一個數字和一個小寫字母。", // ⭐️ 新增文本 ⭐️
+                title: "🐻 打熊配兵比例計算器",
+                author_label: "作者",
+                config_title: "戰術配置",
+                label_capacity: "出征容量：",
+                label_rosa: "使用羅莎 (5級)",
+                note_rosa: "(勾選後弓兵攻擊加成項 x 1.3)",
+                label_cav_skill: "騎兵黃金技能：",
+                label_arc_skill: "弓兵黃金技能：",
+                opt_none: "無 / 低於黃金3",
+                opt_g3: "黃金 3 (10% 機率雙倍)",
+                opt_g5: "黃金 5 (15% 機率雙倍)",
+                opt_g3_arc: "黃金 3 (20% 機率增傷)",
+                opt_g5_arc: "黃金 5 (30% 機率增傷)",
+                stats_title: "兵種面板數據",
+                th_troop: "兵種",
+                th_base_atk: "初始攻",
+                th_base_leth: "初始殺",
+                th_buff_atk: "加成攻 (%)",
+                th_buff_leth: "加成殺 (%)",
+                troop_inf: "🛡️ 盾兵",
+                troop_rid: "🐎 騎兵",
+                troop_hun: "🏹 弓兵",
+                btn_calc: "開始計算最佳比例",
+                result_title: "⚖️ 最佳出征方案",
+                label_total: "總計兵力：",
+                msg_correction: "⚠️ 注意：原始計算盾兵不足 5000，已自動補齊，並按最優權重重新分配騎兵與弓兵。",
+                alert_capacity: "請輸入有效的出征容量！",
+                alert_stats: "請輸入有效的面板數值！"
             },
             "en": {
-                // ... (其他翻译需要同步更新)
-                like_button: "👍 Like", 
-                edit_button: "Edit",
-                delete_button: "Delete",
-                confirm_delete: "Are you sure you want to delete this comment?",
-                delete_success: "Comment deleted.",
-                delete_error: "Deletion failed:",
-                edit_success: "Comment updated successfully.",
-                edit_error: "Comment update failed:",
-                not_logged_in_like: "Please log in to save your like!",
-                input_username: "Nickname (Required)",
-                alert_username_empty: "Nickname cannot be empty during registration!",
-                default_username: "User"
-                input_username: "Nickname (Required)",
-                alert_username_empty: "Nickname cannot be empty during registration!",
-                default_username: "User",
-                alert_password_strength: "Password must be at least 6 characters long and include at least one number and one lowercase letter.", // ⭐️ 新增文本 ⭐️
+                title: "🐻 Bear Trap Calculator",
+                author_label: "Author",
+                config_title: "Configuration",
+                label_capacity: "March Capacity:",
+                label_rosa: "Use Rosa (Lvl 5)",
+                note_rosa: "(Archer Atk Buff x 1.3 if checked)",
+                label_cav_skill: "Cavalry Tier:",
+                label_arc_skill: "Archer Tier:",
+                opt_none: "None / < Gold 3",
+                opt_g3: "Gold 3 (10% Double Dmg)",
+                opt_g5: "Gold 5 (15% Double Dmg)",
+                opt_g3_arc: "Gold 3 (20% Boost)",
+                opt_g5_arc: "Gold 5 (30% Boost)",
+                stats_title: "Troop Stats",
+                th_troop: "Troop Type",
+                th_base_atk: "Base Atk",
+                th_base_leth: "Base Leth",
+                th_buff_atk: "Buff Atk (%)",
+                th_buff_leth: "Buff Leth (%)",
+                troop_inf: "🛡️ Infantry",
+                troop_rid: "🐎 Cavalry",
+                troop_hun: "🏹 Archer",
+                btn_calc: "Calculate Optimal Ratio",
+                result_title: "⚖️ Optimal Formation",
+                label_total: "Total Troops:",
+                msg_correction: "⚠️ Note: Infantry adjusted to min 5,000. Riders and Archers redistributed by optimal weight.",
+                alert_capacity: "Please enter a valid capacity!",
+                alert_stats: "Please enter valid stats!"
             },
-            // ... (其他语言)
+            "ja": {
+                title: "🐻 熊狩り編成計算機",
+                author_label: "作者",
+                config_title: "戦術設定",
+                label_capacity: "行軍規模：",
+                label_rosa: "ローザ使用 (Lv 5)",
+                note_rosa: "(チェック時、弓兵攻撃バフ x 1.3)",
+                label_cav_skill: "騎兵ランク：",
+                label_arc_skill: "弓兵ランク：",
+                opt_none: "なし / 金3未満",
+                opt_g3: "金 3 (10% 2倍ダメ)",
+                opt_g5: "金 5 (15% 2倍ダメ)",
+                opt_g3_arc: "金 3 (20% 追加ダメ)",
+                opt_g5_arc: "金 5 (30% 追加ダメ)",
+                stats_title: "ステータス入力",
+                th_troop: "兵種",
+                th_base_atk: "基礎攻撃",
+                th_base_leth: "基礎殺傷",
+                th_buff_atk: "攻撃バフ (%)",
+                th_buff_leth: "殺傷バフ (%)",
+                troop_inf: "🛡️ 歩兵",
+                troop_rid: "🐎 騎兵",
+                troop_hun: "🏹 弓兵",
+                btn_calc: "最適比率を計算",
+                result_title: "⚖️ 最適な編成",
+                label_total: "合計兵数：",
+                msg_correction: "⚠️ 注意：歩兵が5000未満のため補正しました。残りを騎兵と弓兵で最適配分しました。",
+                alert_capacity: "有効な行軍規模を入力してください！",
+                alert_stats: "有効な数値を入力してください！"
+            },
+            "ko": {
+                title: "🐻 곰 사냥 비율 계산기",
+                author_label: "제작자",
+                config_title: "전술 설정",
+                label_capacity: "출정 부대 규모:",
+                label_rosa: "로사 사용 (5레벨)",
+                note_rosa: "(체크 시 궁수 공격력 버프 x 1.3)",
+                label_cav_skill: "기병 등급:",
+                label_arc_skill: "궁수 등급:",
+                opt_none: "없음 / 골드3 미만",
+                opt_g3: "골드 3 (10% 확률 2배)",
+                opt_g5: "골드 5 (15% 확률 2배)",
+                opt_g3_arc: "골드 3 (20% 확률 추뎀)",
+                opt_g5_arc: "골드 5 (30% 확률 추뎀)",
+                stats_title: "스탯 입력",
+                th_troop: "병종",
+                th_base_atk: "기본 공",
+                th_base_leth: "기본 살상",
+                th_buff_atk: "공격력 버프 (%)",
+                th_buff_leth: "살상력 버프 (%)",
+                troop_inf: "🛡️ 보병",
+                troop_rid: "🐎 기병",
+                troop_hun: "🏹 궁수", 
+                btn_calc: "최적 비율 계산",
+                result_title: "⚖️ 최적 편성",
+                label_total: "총 병력:",
+                msg_correction: "⚠️ 주의: 보병 5000명 보정됨. 기병과 궁수는 최적 비율로 재분배되었습니다.",
+                alert_capacity: "유효한 부대 규모를 입력하세요!",
+                alert_stats: "유효한 수치를 입력하세요!"
+            }
         };
 
         let currentLang = "zh-CN"; 
-    
-    // ... (changeLanguage, firebaseConfig, firebase.initializeApp, updateUIForUser, onAuthStateChanged 保持不变) ...
 
-    // --- 核心：新增密码强度验证函数 ---
-    function validatePassword(password) {
-        // 至少包含一个数字 (0-9)
-        const hasNumber = /\d/.test(password);
-        // 至少包含一个小写字母 (a-z)
-        const hasLower = /[a-z]/.test(password);
-        
-        return hasNumber && hasLower;
-    }
-
-    // ... (calculateOptimalRatio, editComment, deleteComment, initFeedbackFeatures 保持不变) ...
-
-    // --- 登录/注册模态框逻辑 (修改：处理昵称输入和密码强度) ---
-    function setupAuthModalListeners() {
-        const t = translations[currentLang];
-        const authButton = document.getElementById('authButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const authModal = document.getElementById('authModal');
-        const confirmAuthButton = document.getElementById('confirmAuthButton');
-        const toggleAuthMode = document.getElementById('toggleAuthMode');
-        
-        const authUsername = document.getElementById('authUsername'); // 昵称
-        const authEmail = document.getElementById('authEmail');
-        const authPassword = document.getElementById('authPassword');
-        
-        let isRegisterMode = false;
-
-        // ... (显示模态框、登出逻辑、切换模式逻辑 保持不变) ...
-
-        // 确认登录/注册
-        confirmAuthButton.addEventListener('click', () => {
-            const email = authEmail.value;
-            const password = authPassword.value;
-            const username = authUsername.value.trim();
-
-            if (!email || password.length < 6) {
-                // 默认的长度检查仍然保留
-                alert("请输入有效的邮箱和至少6位密码。");
-                return;
-            }
-            
-            if (isRegisterMode) {
-                // 1. 检查昵称
-                if (!username) {
-                    alert(t.alert_username_empty);
-                    return;
-                }
-
-                // 2. ⭐️ 检查密码强度 ⭐️
-                if (!validatePassword(password)) {
-                    alert(t.alert_password_strength);
-                    return;
-                }
-
-                // 注册
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        // 注册成功后，保存用户自定义昵称
-                        return database.ref(`users/${userCredential.user.uid}/username`).set(username)
-                            .then(() => userCredential); 
-                    })
-                    .then(() => {
-                        alert(t.register_success);
-                        authModal.style.display = 'none';
-                    })
-                    .catch((error) => {
-                        alert(t.auth_error_prefix + error.message);
-                    });
-            } else {
-                // 登录 (登录无需额外的密码强度检查)
-                auth.signInWithEmailAndPassword(email, password)
-                    .then(() => {
-                        alert(t.login_success);
-                        authModal.style.display = 'none';
-                    })
-                    .catch((error) => {
-                        alert(t.auth_error_prefix + error.message);
-                    });
-            }
-        });
-
-        // ... (点击背景关闭模态框 保持不变) ...
-    }
-        let currentLang = "zh-CN"; 
-        
         function changeLanguage(lang) {
             currentLang = lang;
             const t = translations[lang];
@@ -536,11 +313,7 @@
                 const key = element.getAttribute('data-i18n');
                 if (t[key]) element.textContent = t[key];
             });
-            // 特殊处理 placeholder 属性
-            document.getElementById('commentInput').placeholder = t.comment_placeholder_attr; 
-            document.getElementById('authUsername').placeholder = t.input_username;
 
-            // 更新作者名称
             const authorNameSpan = document.getElementById('authorName');
             if (lang === 'zh-CN' || lang === 'zh-TW') {
                 authorNameSpan.textContent = "#46 烏龍";
@@ -548,79 +321,18 @@
                 authorNameSpan.textContent = "#46 Oolong";
             }
 
-            // 更新用户状态显示 (如果已登录，需要获取用户名，否则显示匿名)
-            updateUIForUser(auth.currentUser); 
-            
             if (document.getElementById('result-area').style.display === 'block') {
                 calculateOptimalRatio();
             }
         }
 
-
-        // Firebase 配置信息 (使用您项目的实际信息)
-        const firebaseConfig = {
-          apiKey: "AIzaSyDvlbYxDrqdL9Lwp1ndTs7nuwAZ2NZ8aJ8",
-          authDomain: "troo-pcalculator-2.firebaseapp.com",
-          databaseURL: "https://troo-pcalculator-2-default-rtdb.firebaseio.com",
-          projectId: "troo-pcalculator-2",
-          storageBucket: "troo-pcalculator-2.firebase-storage.app",
-          messagingSenderId: "304267188046",
-          appId: "1:304267188046:web:6f6e9d05a399d43089f01f"
-        };
-
-        // 初始化 Firebase
-        firebase.initializeApp(firebaseConfig);
-
-        // 获取 Realtime Database 和 Auth 的引用
-        const database = firebase.database();
-        const auth = firebase.auth(); 
-
-        let currentUserId = null;
-        let currentUserName = translations["zh-CN"].anonymous_user; 
-
-        // --- 用户状态管理核心函数 (修改：从数据库获取昵称) ---
-        function updateUIForUser(user) {
-            const t = translations[currentLang];
-            const displayUserName = document.getElementById('displayUserName');
-            const authButton = document.getElementById('authButton');
-            const logoutButton = document.getElementById('logoutButton');
-            
-            // 默认设置为匿名状态
-            currentUserId = null;
-            currentUserName = t.anonymous_user;
-            displayUserName.textContent = t.anonymous_user;
-            authButton.style.display = 'block';
-            logoutButton.style.display = 'none';
-
-            if (user) {
-                currentUserId = user.uid;
-
-                if (!user.isAnonymous) {
-                    // 真实用户登录：从数据库获取昵称
-                    database.ref(`users/${user.uid}/username`).once('value', (snapshot) => {
-                        currentUserName = snapshot.val() || t.default_username; // 如果数据库中没有昵称，使用默认昵称
-                        displayUserName.textContent = currentUserName;
-                    });
-
-                    authButton.style.display = 'none';
-                    logoutButton.style.display = 'block';
-                } else {
-                    // 匿名用户登录 (保留默认匿名用户状态)
-                    displayUserName.textContent = t.anonymous_user;
-                    authButton.style.display = 'block';
-                    logoutButton.style.display = 'none';
-                }
-            }
-        }
-
-
         document.addEventListener('DOMContentLoaded', () => {
             const browserLang = navigator.language.substring(0, 5); 
             let initialLang = 'zh-CN';
             if (translations[browserLang]) {
-                initialLang = browserLang;
+                 initialLang = browserLang;
             } else if (translations[browserLang.substring(0, 2)]) {
-                initialLang = browserLang.substring(0, 2);
+                 initialLang = browserLang.substring(0, 2);
             }
             const selector = document.getElementById('langSelector');
             if (selector) {
@@ -629,36 +341,15 @@
             } else {
                 changeLanguage(initialLang);
             }
-
-            // --- Firebase Authentication 监听器 (保持不变) ---
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    updateUIForUser(user);
-                } else {
-                    // 如果用户未登录（user == null），尝试进行匿名登录 (确保评论和点赞功能可用)
-                    auth.signInAnonymously()
-                        .then((userCredential) => {
-                            updateUIForUser(userCredential.user);
-                            console.log("匿名登录成功，用户ID:", userCredential.user.uid);
-                        })
-                        .catch((error) => {
-                            console.error("匿名登录失败:", error);
-                        });
-                }
-            });
-
-            // 初始化点赞和评论功能
-            initFeedbackFeatures();
-            setupAuthModalListeners();
         });
 
-
-        // ... (calculateOptimalRatio 核心计算逻辑保持不变) ...
+        // --- 核心逻辑更新 (v3.1: 优化补齐机制) ---
         function calculateOptimalRatio() {
             const t = translations[currentLang]; 
             const capacity = parseFloat(document.getElementById('totalCapacity').value) || 0;
             const useRosa = document.getElementById('rosaToggle').checked;
             
+            // 获取黄金技能设置
             const cavSkill = document.getElementById('cavSkill').value; 
             const arcSkill = document.getElementById('arcSkill').value;
 
@@ -679,12 +370,6 @@
             const inf = getStats('inf');
             const rid = getStats('rid');
             const hun = getStats('hun');
-            
-            // 检查是否有无效输入
-            if ([inf, rid, hun].some(stats => stats.baseAtk === 0 && stats.baseLeth === 0)) {
-                alert(t.alert_stats);
-                return;
-            }
 
             // --- 计算单兵有效强度 S ---
             function calculateEffectiveStrength(stats, type, rosaActive) {
@@ -739,6 +424,7 @@
             // --- 分配逻辑更新 ---
             let rawCountInf = capacity * (w_inf / totalWeight);
             
+            // --- 约束修正逻辑 (重新分配权重法) ---
             let finalInf = Math.round(rawCountInf);
             let finalRid = 0;
             let finalHun = 0;
@@ -748,7 +434,7 @@
 
             if (finalInf < MIN_INFANTRY) {
                 // 1. 强制设置盾兵为最小值
-                finalInf = Math.min(MIN_INFANTRY, capacity);
+                finalInf = MIN_INFANTRY;
                 
                 // 2. 计算剩余可用容量
                 let remainingCapacity = capacity - finalInf;
@@ -759,18 +445,17 @@
                 
                 if (weightRemaining > 0) {
                     finalRid = Math.round(remainingCapacity * (w_rid / weightRemaining));
-                    finalHun = remainingCapacity - finalRid; // 弓兵用减法，确保总和正确
+                    // 弓兵用减法，确保总和正确
+                    finalHun = remainingCapacity - finalRid;
                 } else {
                     finalRid = 0;
                     finalHun = remainingCapacity;
                 }
 
                 // 提示修正信息
-                if (capacity > MIN_INFANTRY) {
-                    correctionMsg = `<div class="notice">${t.msg_correction} (${Math.round(rawCountInf).toLocaleString()})</div>`;
-                }
+                correctionMsg = `<div class="notice">${t.msg_correction} (${Math.round(rawCountInf).toLocaleString()})</div>`;
             } else {
-                // 正常情况：不需要修正
+                // 正常情况：不需要修正，直接按原始比例计算
                 finalRid = Math.round(capacity * (w_rid / totalWeight));
                 finalHun = capacity - finalInf - finalRid;
             }
@@ -803,299 +488,6 @@
                 </div>
                 ${correctionMsg}
             `;
-        }
-
-
-        // ... (editComment 和 deleteComment 函数保持不变) ...
-        window.editComment = function(commentId, currentText) {
-            const t = translations[currentLang];
-            const editModal = document.getElementById('editModal');
-            const editCommentText = document.getElementById('editCommentText');
-            const confirmEditButton = document.getElementById('confirmEditButton');
-            
-            editCommentText.value = currentText;
-            editModal.style.display = 'flex';
-
-            // 移除旧的事件监听器，避免多次触发
-            confirmEditButton.replaceWith(confirmEditButton.cloneNode(true));
-            const newConfirmEditButton = document.getElementById('confirmEditButton');
-
-            newConfirmEditButton.addEventListener('click', () => {
-                const newText = editCommentText.value.trim();
-                if (!newText) {
-                    alert(t.comment_empty_alert);
-                    return;
-                }
-
-                database.ref(`calculator_data/comments/${commentId}`).update({
-                    text: newText,
-                    timestamp_edited: firebase.database.ServerValue.TIMESTAMP // 记录修改时间
-                })
-                .then(() => {
-                    alert(t.edit_success);
-                    editModal.style.display = 'none';
-                })
-                .catch(error => {
-                    console.error(t.edit_error, error);
-                    alert(t.edit_error + error.message);
-                });
-            });
-
-            // 点击背景关闭模态框
-            editModal.addEventListener('click', (e) => {
-                if (e.target === editModal) {
-                    editModal.style.display = 'none';
-                }
-            });
-        };
-
-        window.deleteComment = function(commentId) {
-            const t = translations[currentLang];
-            if (confirm(t.confirm_delete)) {
-                database.ref(`calculator_data/comments/${commentId}`).remove()
-                    .then(() => {
-                        alert(t.delete_success);
-                    })
-                    .catch(error => {
-                        console.error(t.delete_error, error);
-                        alert(t.delete_error + error.message);
-                    });
-            }
-        };
-
-
-        // ... (initFeedbackFeatures 函数保持不变) ...
-        function initFeedbackFeatures() {
-            const t = translations[currentLang];
-            const likeButton = document.getElementById('likeButton');
-            const likeCountSpan = document.getElementById('likeCount');
-            const commentInput = document.getElementById('commentInput');
-            const submitCommentButton = document.getElementById('submitCommentButton');
-            const commentsList = document.getElementById('commentsList');
-
-            // 1. 实时更新点赞总数
-            const calculatorLikesCountRef = database.ref('calculator_data/likes_count');
-            calculatorLikesCountRef.on('value', (snapshot) => {
-                const currentLikes = snapshot.val() || 0;
-                likeCountSpan.textContent = currentLikes;
-            });
-
-            // 2. 处理点赞按钮点击 (新增非匿名用户检查)
-            likeButton.addEventListener('click', () => {
-                // 检查用户是否已登录 (非匿名)
-                if (!currentUserId || auth.currentUser.isAnonymous) {
-                    alert(t.not_logged_in_like);
-                    return;
-                }
-
-                const userLikedRef = database.ref(`calculator_data/users_who_liked/${currentUserId}`);
-                userLikedRef.transaction((currentValue) => {
-                    if (currentValue === null) { 
-                        // 用户点赞
-                        calculatorLikesCountRef.transaction((count) => (count || 0) + 1); 
-                        alert(t.like_success);
-                        return true; 
-                    } else { 
-                        // 用户取消点赞
-                        calculatorLikesCountRef.transaction((count) => (count > 0 ? count - 1 : 0)); 
-                        alert("已取消点赞"); 
-                        return null; 
-                    }
-                }).catch((error) => {
-                    console.error(t.like_error, error);
-                    alert(t.like_error + error.message);
-                });
-            });
-
-            // 3. 处理提交评论按钮点击 
-            submitCommentButton.addEventListener('click', () => {
-                if (!currentUserId) {
-                    alert("正在获取用户身份，请稍候再试。");
-                    return;
-                }
-
-                // 强制要求非匿名用户才能评论
-                 if (auth.currentUser.isAnonymous) {
-                    alert("请先登录或注册您的账号，以便保存您的评论记录！");
-                    return;
-                }
-
-                const commentText = commentInput.value.trim();
-                if (commentText) {
-                    const newCommentRef = database.ref('calculator_data/comments').push(); 
-                    newCommentRef.set({
-                        user_id: currentUserId,
-                        username: currentUserName, // 使用当前用户昵称
-                        text: commentText,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP 
-                    })
-                    .then(() => {
-                        alert(t.comment_success);
-                        commentInput.value = ''; // 清空输入框
-                    })
-                    .catch((error) => {
-                        console.error(t.comment_error, error);
-                        alert(t.comment_error + error.message);
-                    });
-                } else {
-                    alert(t.comment_empty_alert);
-                }
-            });
-
-            // 4. 实时加载评论 (保持不变)
-            const commentsRef = database.ref('calculator_data/comments').orderByChild('timestamp').limitToLast(10); 
-            commentsRef.on('value', (snapshot) => {
-                const comments = [];
-                snapshot.forEach((childSnapshot) => {
-                    comments.push({
-                        ...childSnapshot.val(),
-                        id: childSnapshot.key
-                    });
-                });
-                
-                comments.reverse();
-
-                let html = '';
-                if (comments.length === 0) {
-                    html = `<p style="text-align: center; color: #999;" data-i18n="no_comments">${t.no_comments}</p>`;
-                } else {
-                    comments.forEach(comment => {
-                        const date = new Date(comment.timestamp);
-                        // 确保是当前登录的非匿名用户才能看到操作按钮
-                        const isOwner = comment.user_id === currentUserId && currentUserId !== null && auth.currentUser && !auth.currentUser.isAnonymous; 
-
-                        let actionButtons = '';
-                        if (isOwner) {
-                            // 评论管理按钮
-                            actionButtons = `
-                                <div class="comment-actions">
-                                    <button onclick="editComment('${comment.id}', \`${comment.text}\`)" data-i18n="edit_button">${t.edit_button}</button>
-                                    <button onclick="deleteComment('${comment.id}')" data-i18n="delete_button">${t.delete_button}</button>
-                                </div>
-                            `;
-                        }
-
-                        html += `
-                            <div class="comment-item">
-                                <div class="comment-author">${comment.username}</div>
-                                <div class="comment-text">${comment.text}</div>
-                                <div class="comment-time">${date.toLocaleString(currentLang)}</div>
-                                ${actionButtons}
-                            </div>
-                        `;
-                    });
-                }
-                commentsList.innerHTML = html;
-            });
-        }
-
-        // --- 登录/注册模态框逻辑 (修改：处理昵称输入) ---
-        function setupAuthModalListeners() {
-            const t = translations[currentLang];
-            const authButton = document.getElementById('authButton');
-            const logoutButton = document.getElementById('logoutButton');
-            const authModal = document.getElementById('authModal');
-            const confirmAuthButton = document.getElementById('confirmAuthButton');
-            const toggleAuthMode = document.getElementById('toggleAuthMode');
-            
-            const authUsername = document.getElementById('authUsername'); // 昵称
-            const authEmail = document.getElementById('authEmail');
-            const authPassword = document.getElementById('authPassword');
-            
-            let isRegisterMode = false;
-
-            // 显示模态框
-            authButton.addEventListener('click', () => {
-                isRegisterMode = false; // 默认切换到登录模式
-                authModal.style.display = 'flex';
-                confirmAuthButton.textContent = t.btn_confirm_login;
-                toggleAuthMode.textContent = t.switch_to_register;
-                
-                // 登录模式下隐藏昵称输入框
-                authUsername.style.display = 'none';
-                authUsername.value = '';
-
-                authEmail.value = '';
-                authPassword.value = '';
-            });
-
-            // 登出逻辑
-            logoutButton.addEventListener('click', () => {
-                auth.signOut().then(() => {
-                    alert(t.logout_success);
-                }).catch((error) => {
-                    console.error("登出失败:", error);
-                });
-            });
-
-            // 切换登录/注册模式
-            toggleAuthMode.addEventListener('click', () => {
-                isRegisterMode = !isRegisterMode;
-                confirmAuthButton.textContent = isRegisterMode ? t.comment_submit : t.btn_confirm_login;
-                toggleAuthMode.textContent = isRegisterMode ? t.switch_to_login : t.switch_to_register;
-                
-                // 注册模式下显示昵称输入框
-                authUsername.style.display = isRegisterMode ? 'block' : 'none';
-                authUsername.placeholder = t.input_username; 
-
-                authEmail.value = '';
-                authPassword.value = '';
-                authUsername.value = '';
-                authPassword.placeholder = "密码 (至少6位)";
-            });
-
-            // 确认登录/注册
-            confirmAuthButton.addEventListener('click', () => {
-                const email = authEmail.value;
-                const password = authPassword.value;
-                const username = authUsername.value.trim();
-
-                if (!email || password.length < 6) {
-                    alert("请输入有效的邮箱和至少6位密码。");
-                    return;
-                }
-                
-                if (isRegisterMode && !username) {
-                    alert(t.alert_username_empty);
-                    return;
-                }
-
-                if (isRegisterMode) {
-                    // 注册
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .then((userCredential) => {
-                            // 注册成功后，保存用户自定义昵称
-                            return database.ref(`users/${userCredential.user.uid}/username`).set(username)
-                                .then(() => userCredential); // 将 userCredential 传递给下一个 then
-                        })
-                        .then(() => {
-                            alert(t.register_success);
-                            authModal.style.display = 'none';
-                            // onAuthStateChanged 会负责 UI 更新
-                        })
-                        .catch((error) => {
-                            alert(t.auth_error_prefix + error.message);
-                        });
-                } else {
-                    // 登录
-                    auth.signInWithEmailAndPassword(email, password)
-                        .then(() => {
-                            alert(t.login_success);
-                            authModal.style.display = 'none';
-                            // onAuthStateChanged 会负责 UI 更新
-                        })
-                        .catch((error) => {
-                            alert(t.auth_error_prefix + error.message);
-                        });
-                }
-            });
-
-            // 点击背景关闭模态框
-            authModal.addEventListener('click', (e) => {
-                if (e.target === authModal) {
-                    authModal.style.display = 'none';
-                }
-            });
         }
     </script>
 </body>
