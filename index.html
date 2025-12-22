@@ -28,7 +28,6 @@
         #result-area { display: none; background-color: #e8f6f3; border: 1px solid #a3e4d7; }
         .result-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1em; }
         .result-highlight { font-weight: bold; color: #d35400; }
-        
         @media (max-width: 600px) {
             .input-group { gap: 10px; }
             .input-group label { min-width: 100px; }
@@ -50,7 +49,10 @@
     </div>
 
     <h1 data-i18n="title">🐻 打熊配兵比例计算器</h1>
-    <p class="author-credit"><span data-i18n="author_label">作者</span>: <span id="authorName">#46 烏龍</span></p>
+    
+    <p class="author-credit">
+        <span data-i18n="author_label">作者</span>: <span id="authorName">#46 烏龍</span>
+    </p>
 
     <div class="card">
         <div class="section-title" data-i18n="config_title">战术配置</div>
@@ -63,7 +65,9 @@
                 <input type="checkbox" id="rosaToggle"> 
                 <span data-i18n="label_rosa">使用罗莎 (5级)</span>
             </label>
+            <span style="font-size: 0.9em; color: #666; margin-left: 5px;" data-i18n="note_rosa">(勾选后弓兵攻击加成项 x 1.3)</span>
         </div>
+        <hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;">
         <div class="input-group">
             <label data-i18n="label_cav_skill">骑兵黄金技能：</label>
             <select id="cavSkill" class="tier-select">
@@ -127,6 +131,7 @@
     </div>
 
     <script>
+        // --- 1. 多语言词典 (去掉了 msg_correction) ---
         const translations = {
             "zh-CN": {
                 title: "🐻 打熊配兵比例计算器",
@@ -134,6 +139,7 @@
                 config_title: "战术配置",
                 label_capacity: "出征容量：",
                 label_rosa: "使用罗莎 (5级)",
+                note_rosa: "(勾选后弓兵攻击加成项 x 1.3)",
                 label_cav_skill: "骑兵黄金技能：",
                 label_arc_skill: "弓兵黄金技能：",
                 opt_none: "无 / 低于黄金3",
@@ -162,6 +168,7 @@
                 config_title: "戰術配置",
                 label_capacity: "出征容量：",
                 label_rosa: "使用羅莎 (5級)",
+                note_rosa: "(勾選後弓兵攻擊加成項 x 1.3)",
                 label_cav_skill: "騎兵黃金技能：",
                 label_arc_skill: "弓兵黃金技能：",
                 opt_none: "無 / 低於黃金3",
@@ -190,6 +197,7 @@
                 config_title: "Configuration",
                 label_capacity: "March Capacity:",
                 label_rosa: "Use Rosa (Lvl 5)",
+                note_rosa: "(Archer Atk Buff x 1.3 if checked)",
                 label_cav_skill: "Cavalry Tier:",
                 label_arc_skill: "Archer Tier:",
                 opt_none: "None / < Gold 3",
@@ -211,6 +219,64 @@
                 label_total: "Total Troops:",
                 alert_capacity: "Please enter a valid capacity!",
                 alert_stats: "Please enter valid stats!"
+            },
+            "ja": {
+                title: "🐻 熊狩り編成計算機",
+                author_label: "作者",
+                config_title: "戦術設定",
+                label_capacity: "行軍規模：",
+                label_rosa: "ローザ使用 (Lv 5)",
+                note_rosa: "(チェック时、弓兵攻撃バフ x 1.3)",
+                label_cav_skill: "騎兵ランク：",
+                label_arc_skill: "弓兵ランク：",
+                opt_none: "なし / 金3未満",
+                opt_g3: "金 3 (10% 2倍ダメ)",
+                opt_g5: "金 5 (15% 2倍ダメ)",
+                opt_g3_arc: "金 3 (20% 追加ダメ)",
+                opt_g5_arc: "金 5 (30% 追加ダメ)",
+                stats_title: "ステータス入力",
+                th_troop: "兵種",
+                th_base_atk: "基礎攻撃",
+                th_base_leth: "基礎殺傷",
+                th_buff_atk: "攻撃バフ (%)",
+                th_buff_leth: "殺傷バフ (%)",
+                troop_inf: "🛡️ 歩兵",
+                troop_rid: "🐎 騎兵",
+                troop_hun: "🏹 弓兵",
+                btn_calc: "最適比率を計算",
+                result_title: "⚖️ 最適な編成",
+                label_total: "合計兵数：",
+                alert_capacity: "有効な行軍規模を入力してください！",
+                alert_stats: "有効な数値を入力してください！"
+            },
+            "ko": {
+                title: "🐻 곰 사냥 비율 계산기",
+                author_label: "제작자",
+                config_title: "전술 설정",
+                label_capacity: "출정 부대 규모:",
+                label_rosa: "로사 사용 (5레벨)",
+                note_rosa: "(체크 시 궁수 공격력 버프 x 1.3)",
+                label_cav_skill: "기병 등급:",
+                label_arc_skill: "궁수 등급:",
+                opt_none: "없음 / 골드3 미만",
+                opt_g3: "골드 3 (10% 확률 2배)",
+                opt_g5: "골드 5 (15% 확률 2배)",
+                opt_g3_arc: "골드 3 (20% 확률 추뎀)",
+                opt_g5_arc: "골드 5 (30% 확률 추뎀)",
+                stats_title: "스탯 입력",
+                th_troop: "병종",
+                th_base_atk: "기본 공",
+                th_base_leth: "기본 살상",
+                th_buff_atk: "공격력 버프 (%)",
+                th_buff_leth: "살상력 버프 (%)",
+                troop_inf: "🛡️ 보병",
+                troop_rid: "🐎 기병",
+                troop_hun: "🏹 궁수", 
+                btn_calc: "최적 비율 계산",
+                result_title: "⚖️ 최적 편성",
+                label_total: "총 병력:",
+                alert_capacity: "유효한 부대 규모를 입력하세요!",
+                alert_stats: "유효한 수치를 입력하세요!"
             }
         };
 
@@ -218,76 +284,110 @@
 
         function changeLanguage(lang) {
             currentLang = lang;
-            const t = translations[lang] || translations["en"];
+            const t = translations[lang];
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
                 if (t[key]) element.textContent = t[key];
             });
-            document.getElementById('authorName').textContent = (lang.startsWith('zh')) ? "#46 烏龍" : "#46 Oolong";
+            const authorNameSpan = document.getElementById('authorName');
+            authorNameSpan.textContent = (lang === 'zh-CN' || lang === 'zh-TW') ? "#46 烏龍" : "#46 Oolong";
+            if (document.getElementById('result-area').style.display === 'block') calculateOptimalRatio();
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const browserLang = navigator.language.substring(0, 5); 
+            let initialLang = translations[browserLang] ? browserLang : (translations[browserLang.substring(0, 2)] ? browserLang.substring(0, 2) : 'zh-CN');
+            document.getElementById('langSelector').value = initialLang;
+            changeLanguage(initialLang);
+        });
+
+        // --- 核心逻辑：移除补齐机制，纯比例分配 ---
         function calculateOptimalRatio() {
-            const t = translations[currentLang] || translations["en"];
+            const t = translations[currentLang]; 
             const capacity = parseFloat(document.getElementById('totalCapacity').value) || 0;
             const useRosa = document.getElementById('rosaToggle').checked;
-            const cavSkill = document.getElementById('cavSkill').value;
+            const cavSkill = document.getElementById('cavSkill').value; 
             const arcSkill = document.getElementById('arcSkill').value;
 
             if (capacity <= 0) { alert(t.alert_capacity); return; }
 
-            function getS(prefix, type) {
-                const bAtk = parseFloat(document.getElementById(prefix + '_base_atk').value) || 0;
-                const bLeth = parseFloat(document.getElementById(prefix + '_base_leth').value) || 0;
-                let buffAtk = 1 + (parseFloat(document.getElementById(prefix + '_buff_atk').value) || 0) / 100;
-                const buffLeth = 1 + (parseFloat(document.getElementById(prefix + '_buff_leth').value) || 0) / 100;
-
-                if (type === 'hunter' && useRosa) buffAtk *= 1.3;
-                const kBase = bAtk * bLeth * buffAtk * buffLeth;
-
-                let b = 0;
-                if (type === 'rider') b = 0.2017;
-                if (type === 'hunter') b = 0.443;
-
-                let f = 1.0;
-                if (type === 'rider') {
-                    if (cavSkill === 'g3') f = 1.1;
-                    else if (cavSkill === 'g5') f = 1.15;
-                } else if (type === 'hunter') {
-                    const baseF = 1.1;
-                    let goldF = 1.0;
-                    if (arcSkill === 'g3') goldF = 1.1;
-                    else if (arcSkill === 'g5') goldF = 1.15;
-                    f = baseF * goldF;
-                }
-                return kBase * (1 + b) * f;
+            function getStats(prefix) {
+                return {
+                    baseAtk: parseFloat(document.getElementById(prefix + '_base_atk').value) || 0,
+                    baseLeth: parseFloat(document.getElementById(prefix + '_base_leth').value) || 0,
+                    buffAtk: parseFloat(document.getElementById(prefix + '_buff_atk').value) || 0,
+                    buffLeth: parseFloat(document.getElementById(prefix + '_buff_leth').value) || 0
+                };
             }
 
-            const s_inf = getS('inf', 'infantry');
-            const s_rid = getS('rid', 'rider');
-            const s_hun = getS('hun', 'hunter');
+            const inf = getStats('inf');
+            const rid = getStats('rid');
+            const hun = getStats('hun');
 
+            function calculateEffectiveStrength(stats, type, rosaActive) {
+                let attackMultiplier = 1 + (stats.buffAtk / 100);
+                if (type === 'hunter' && rosaActive) attackMultiplier *= 1.3;
+                const lethalityMultiplier = 1 + (stats.buffLeth / 100);
+                const k_base = stats.baseAtk * stats.baseLeth * attackMultiplier * lethalityMultiplier;
+
+                let bonusB = (type === 'rider') ? 0.2017 : (type === 'hunter' ? 0.443 : 0);
+                let skillF = 1.0;
+
+                if (type === 'rider') {
+                    if (cavSkill === 'g3') skillF = 1.1; 
+                    else if (cavSkill === 'g5') skillF = 1.15;
+                }
+                if (type === 'hunter') {
+                    const baseSkillF = 1.1;
+                    let goldSkillF = (arcSkill === 'g3') ? 1.1 : (arcSkill === 'g5' ? 1.15 : 1.0);
+                    skillF = baseSkillF * goldSkillF;
+                }
+                return k_base * (1 + bonusB) * skillF;
+            }
+
+            const s_inf = calculateEffectiveStrength(inf, 'infantry', useRosa);
+            const s_rid = calculateEffectiveStrength(rid, 'rider', useRosa);
+            const s_hun = calculateEffectiveStrength(hun, 'hunter', useRosa);
+
+            // 权重 W = S^2
             const w_inf = s_inf * s_inf;
             const w_rid = s_rid * s_rid;
             const w_hun = s_hun * s_hun;
-            const totalW = w_inf + w_rid + w_hun;
+            const totalWeight = w_inf + w_rid + w_hun;
 
-            if (totalW === 0) { alert(t.alert_stats); return; }
+            if (totalWeight === 0) { alert(t.alert_stats); return; }
 
-            // 纯比例分配
-            const fInf = Math.round(capacity * (w_inf / totalW));
-            const fRid = Math.round(capacity * (w_rid / totalW));
-            const fHun = capacity - fInf - fRid;
+            // --- 纯权重比例分配 ---
+            let finalInf = Math.round(capacity * (w_inf / totalWeight));
+            let finalRid = Math.round(capacity * (w_rid / totalWeight));
+            let finalHun = capacity - finalInf - finalRid; // 用减法确保总数对齐
 
-            document.getElementById('result-area').style.display = 'block';
-            document.getElementById('result-content').innerHTML = `
-                <div class="result-row"><span>${t.troop_inf}</span><span><span class="result-highlight">${fInf.toLocaleString()}</span> (${((fInf/capacity)*100).toFixed(2)}%)</span></div>
-                <div class="result-row"><span>${t.troop_rid}</span><span><span class="result-highlight">${fRid.toLocaleString()}</span> (${((fRid/capacity)*100).toFixed(2)}%)</span></div>
-                <div class="result-row"><span>${t.troop_hun}</span><span><span class="result-highlight">${fHun.toLocaleString()}</span> (${((fHun/capacity)*100).toFixed(2)}%)</span></div>
-                <div style="margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><strong>${t.label_total}</strong> ${capacity.toLocaleString()}</div>
+            const resultArea = document.getElementById('result-area');
+            const resultContent = document.getElementById('result-content');
+            resultArea.style.display = 'block';
+            
+            const pInf = ((finalInf / capacity) * 100).toFixed(2);
+            const pRid = ((finalRid / capacity) * 100).toFixed(2);
+            const pHun = ((finalHun / capacity) * 100).toFixed(2);
+
+            resultContent.innerHTML = `
+                <div class="result-row">
+                    <span>${t.troop_inf}</span>
+                    <span><span class="result-highlight">${finalInf.toLocaleString()}</span> (${pInf}%)</span>
+                </div>
+                <div class="result-row">
+                    <span>${t.troop_rid}</span>
+                    <span><span class="result-highlight">${finalRid.toLocaleString()}</span> (${pRid}%)</span>
+                </div>
+                <div class="result-row">
+                    <span>${t.troop_hun}</span>
+                    <span><span class="result-highlight">${finalHun.toLocaleString()}</span> (${pHun}%)</span>
+                </div>
+                <div style="margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;">
+                    <strong>${t.label_total}</strong> ${ (finalInf + finalRid + finalHun).toLocaleString() }
+                </div>
             `;
         }
-
-        document.addEventListener('DOMContentLoaded', () => changeLanguage('zh-CN'));
     </script>
 </body>
 </html>
